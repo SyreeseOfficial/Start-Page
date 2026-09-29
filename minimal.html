@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #282a36; }
+  body {
+    font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+    color: #f8f8f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  @keyframes blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+
+  #screen {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    padding: 0 6vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+  }
+  #screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .14;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+  }
+
+  #cat {
+    margin: 0;
+    font: inherit;
+    line-height: 1.2;
+    text-align: center;
+    color: #bd93f9;
+    opacity: .55;
+    cursor: default;
+    transition: opacity .2s ease, transform .3s ease;
+  }
+  #cat:hover { opacity: .9; transform: translateY(-2px) rotate(-2deg); }
+
+  #search {
+    position: relative;
+    width: min(720px, 92vw);
+    border: 1px solid #6272a4;
+    padding: 0 16px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  #search:focus-within {
+    border-color: #bd93f9;
+    box-shadow: 0 0 0 1px rgba(189,147,249,.15), 0 4px 20px rgba(189,147,249,.08);
+  }
+  #search-box {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    height: 24px;
+  }
+  #search-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: transparent;
+    caret-color: transparent;
+    font: inherit;
+    padding: 0;
+  }
+  #search-echo { pointer-events: none; color: #fff; white-space: pre; }
+  #cursor { pointer-events: none; display: inline-block; width: 8px; height: 16px; background: #bd93f9; animation: blink 1.06s steps(1) infinite; }
+  #search-hint { pointer-events: none; margin-left: 10px; color: #6272a4; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="screen">
+  <pre id="cat"> /\_/\
+( o.o )
+ &gt; ^ &lt;</pre>
+
+  <div id="search">
+    <span style="color:#50fa7b">&#10095;</span>
+    <div id="search-box">
+      <input id="search-input" spellcheck="false" autofocus>
+      <span id="search-echo"></span><span id="cursor"></span>
+      <span id="search-hint">type to search &middot; y = youtube &middot; gh = github</span>
+    </div>
+    <span style="color:#6272a4">[/]</span>
+  </div>
+</div>
+
+<script src="minimal.js" defer></script>
+</body>
+</html>
