@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #282a36; }
+  body {
+    font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+    color: #f8f8f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  a { color: #ff79c6; text-decoration: none; }
+  a:hover { color: #f8f8f2; }
+  @keyframes blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+
+  #screen {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    padding: 4vh 5vw;
+    display: grid;
+    grid-template-columns: 290px 1fr;
+    grid-template-rows: 46px 1fr 56px;
+    gap: 14px;
+  }
+  #screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: .14;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+  }
+
+  .pane {
+    position: relative;
+    border: 1px solid #6272a4;
+    padding: 22px 16px 14px;
+  }
+  .pane-label {
+    position: absolute;
+    top: -9px;
+    left: 12px;
+    background: #282a36;
+    padding: 0 6px;
+    color: #bd93f9;
+  }
+
+  /* search bar */
+  #search {
+    position: relative;
+    grid-column: 1 / 3;
+    border: 1px solid #6272a4;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  #search-box {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    height: 24px;
+  }
+  #search-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: transparent;
+    caret-color: transparent;
+    font: inherit;
+    padding: 0;
+  }
+  #search-echo { pointer-events: none; color: #fff; white-space: pre; }
+  #cursor { pointer-events: none; display: inline-block; width: 8px; height: 16px; background: #bd93f9; animation: blink 1.06s steps(1) infinite; }
+  #search-hint { pointer-events: none; margin-left: 10px; color: #6272a4; }
+
+  /* home pane */
+  #home-pane { display: flex; flex-direction: column; gap: 10px; }
+  #greeting { font-size: 16px; font-weight: 700; color: #fff; }
+  #clock { font-size: 30px; font-weight: 700; line-height: 1; color: #bd93f9; }
+  #date { color: #fff; }
+  .wx { border-top: 1px dashed #6272a4; padding-top: 10px; display: flex; flex-direction: column; gap: 2px; }
+  .wx-row { display: flex; justify-content: space-between; }
+  .wx-row span:first-child { color: #6272a4; }
+  .wx-row span:last-child { color: #8be9fd; }
+  .wx-row.sun span:last-child { color: #f1fa8c; }
+
+  /* links pane */
+  #links-pane { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; align-content: start; }
+  .group-name { color: #8be9fd; margin-bottom: 2px; }
+  .group-name::before { content: "## "; }
+  #cat {
+    position: absolute;
+    right: 16px;
+    bottom: 10px;
+    margin: 0;
+    font: inherit;
+    line-height: 1.2;
+    color: #bd93f9;
+    opacity: .55;
+  }
+
+  /* fortune */
+  #fortune {
+    position: relative;
+    grid-column: 1 / 3;
+    border: 1px solid #6272a4;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  #quote { font-style: italic; font-size: 12px; }
+  #author { color: #50fa7b; }
+  #new-quote { flex: none; color: #6272a4; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="screen">
+  <div id="search">
+    <span class="pane-label">search</span>
+    <span style="color:#50fa7b">&#10095;</span>
+    <div id="search-box">
+      <input id="search-input" spellcheck="false" autofocus>
+      <span id="search-echo"></span><span id="cursor"></span>
+      <span id="search-hint">type to search &middot; y = youtube &middot; gh = github</span>
+    </div>
+    <span style="color:#6272a4">[/]</span>
+  </div>
+
+  <div class="pane" id="home-pane">
+    <span class="pane-label">~/home</span>
+    <div id="greeting"></div>
+    <div id="clock"></div>
+    <div id="date"></div>
+    <div class="wx">
+      <div class="wx-row"><span>place</span><span id="wx-place">...</span></div>
+      <div class="wx-row"><span>temp</span><span id="wx-temp">--</span></div>
+      <div class="wx-row"><span>rain</span><span id="wx-rain">--%</span></div>
+      <div class="wx-row sun"><span>sunrise</span><span id="wx-sunrise">--:--</span></div>
+      <div class="wx-row sun"><span>sunset</span><span id="wx-sunset">--:--</span></div>
+    </div>
+  </div>
+
+  <div class="pane" id="links-pane"></div>
+
+  <div id="fortune">
+    <span class="pane-label">fortune</span>
+    <span>"<span id="quote">Loading a quote...</span>" <span id="author"></span></span>
+    <a id="new-quote" href="#">[n] new</a>
+  </div>
+</div>
+
+<pre id="cat"> /\_/\
+( o.o )
+ &gt; ^ &lt;</pre>
+
+<script>
+const LINK_GROUPS = [
+  { name: 'google', links: [['g','gmail','https://mail.google.com/'],['p','photos','https://photos.google.com/'],['c','calendar','https://calendar.google.com/'],['d','drive','https://drive.google.com/'],['o','docs','https://docs.google.com/']] },
+  { name: 'dev+ai', links: [['h','github','https://github.com/'],['l','claude','https://claude.ai/'],['e','gemini','https://gemini.google.com/']] },
+  { name: 'media', links: [['y','youtube','https://www.youtube.com/'],['r','reddit','https://www.reddit.com/'],['x','x','https://x.com/?lang=en'],['m','yt music','https://music.youtube.com/']] },
+  { name: 'tools', links: [['t','yt transcript','https://youtubetotranscript.com/'],['v','canva','https://www.canva.com/'],['k','monkeytype','https://monkeytype.com/'],['i','title caps','https://capitalizemytitle.com/'],['a','date calc','https://www.timeanddate.com/date/dateadd.html']] }
+];
+
+const linksPane = document.getElementById('links-pane');
+for (const g of LINK_GROUPS) {
+  const col = document.createElement('div');
+  const name = document.createElement('div');
+  name.className = 'group-name';
+  name.textContent = g.name;
+  col.appendChild(name);
+  for (const [key, label, href] of g.links) {
+    const row = document.createElement('div');
+    row.innerHTML = `<span style="color:#6272a4">${key}</span> <a href="${href}">${label}</a>`;
+    col.appendChild(row);
+  }
+  linksPane.appendChild(col);
+}
+document.getElementById('links-pane').appendChild(document.getElementById('cat'));
+document.getElementById('cat').style.position = 'absolute';
+
+const pad = n => String(n).padStart(2, '0');
+const ordinal = d => (d % 10 === 1 && d !== 11) ? 'st' : (d % 10 === 2 && d !== 12) ? 'nd' : (d % 10 === 3 && d !== 13) ? 'rd' : 'th';
+
+function tick() {
+  const n = new Date();
+  const h = n.getHours(), day = n.getDate();
+  document.getElementById('greeting').textContent = (h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening') + ', Syreese.';
+  document.getElementById('clock').textContent = `${pad(h)}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+  document.getElementById('date').textContent = `${n.toLocaleDateString('en-US', { weekday: 'long' })} the ${day}${ordinal(day)}`;
+}
+tick();
+setInterval(tick, 1000);
+
+function hm(iso) { return iso ? iso.slice(11, 16) : '--:--'; }
+function loadWeather(lat, lon, place) {
+  fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&daily=sunrise,sunset,precipitation_probability_max&timezone=auto&forecast_days=1`)
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('wx-place').textContent = place;
+      document.getElementById('wx-temp').textContent = `${Math.round(d.current.temperature_2m)}°C`;
+      document.getElementById('wx-rain').textContent = `${d.daily.precipitation_probability_max[0]}%`;
+      document.getElementById('wx-sunrise').textContent = hm(d.daily.sunrise[0]);
+      document.getElementById('wx-sunset').textContent = hm(d.daily.sunset[0]);
+    })
+    .catch(() => {});
+}
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    p => loadWeather(p.coords.latitude, p.coords.longitude, 'local'),
+    () => loadWeather(40.71, -74.01, 'New York'),
+    { timeout: 4000 }
+  );
+} else {
+  loadWeather(40.71, -74.01, 'New York');
+}
+
+function loadQuote() {
+  fetch('https://quotescdn.vercel.app/api/random')
+    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(q => {
+      document.getElementById('quote').textContent = q.quote;
+      document.getElementById('author').textContent = `— ${q.author}`;
+    })
+    .catch(err => {
+      console.error('quote fetch failed:', err);
+      document.getElementById('quote').textContent = 'Could not load a quote — check console for error';
+      document.getElementById('author').textContent = '';
+    });
+}
+loadQuote();
+document.getElementById('new-quote').addEventListener('click', e => { e.preventDefault(); loadQuote(); });
+
+const input = document.getElementById('search-input');
+const echo = document.getElementById('search-echo');
+const hint = document.getElementById('search-hint');
+input.addEventListener('input', () => {
+  echo.textContent = input.value;
+  hint.style.display = input.value ? 'none' : '';
+});
+input.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const v = input.value.trim();
+  if (!v) return;
+  const m = v.match(/^(y|gh)\s+(.*)$/);
+  const q = encodeURIComponent(m ? m[2] : v);
+  window.location.href = m && m[1] === 'y'
+    ? `https://www.youtube.com/results?search_query=${q}`
+    : m ? `https://github.com/search?q=${q}`
+    : `https://www.google.com/search?q=${q}`;
+});
+document.addEventListener('keydown', e => {
+  const t = e.target && e.target.tagName;
+  if (t === 'INPUT' || e.ctrlKey || e.metaKey) return;
+  if (e.key === '/') { e.preventDefault(); input.focus(); }
+  else if (e.key === 'n') loadQuote();
+});
+</script>
+</body>
+</html>
